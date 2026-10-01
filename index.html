@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Student Grade Calculator</title>
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; min-height: 100vh; display: grid; place-items: center; padding: 24px; font-family: Arial, sans-serif; background: #f1f5f9; color: #1e293b; }
+    .calculator { width: min(100%, 480px); padding: 28px; border-radius: 14px; background: white; box-shadow: 0 10px 25px rgba(15, 23, 42, 0.12); }
+    h1 { margin-top: 0; text-align: center; font-size: 1.6rem; }
+    .hint { margin-bottom: 20px; color: #64748b; text-align: center; }
+    label { display: block; margin: 12px 0 6px; font-weight: bold; }
+    input { width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 7px; font-size: 1rem; }
+    button { width: 100%; margin-top: 22px; padding: 11px; border: 0; border-radius: 7px; background: #2563eb; color: white; font-size: 1rem; font-weight: bold; cursor: pointer; }
+    button:hover { background: #1d4ed8; }
+    #message { min-height: 24px; margin: 16px 0 0; text-align: center; font-weight: bold; }
+    .error, .fail { color: #b91c1c; }
+    .pass { color: #15803d; }
+    .results { margin-top: 12px; padding: 14px; border-radius: 7px; background: #eff6ff; }
+    .results p { margin: 7px 0; }
+  </style>
+</head>
+<body>
+  <main class="calculator">
+    <h1>Student Grade Calculator</h1>
+    <p class="hint">Enter a mark from 0 to 100 for each subject.</p>
+
+    <form id="gradeForm">
+      <label for="subject1">Subject 1</label>
+      <input id="subject1" type="number" min="0" max="100" step="0.01" required>
+      <label for="subject2">Subject 2</label>
+      <input id="subject2" type="number" min="0" max="100" step="0.01" required>
+      <label for="subject3">Subject 3</label>
+      <input id="subject3" type="number" min="0" max="100" step="0.01" required>
+      <label for="subject4">Subject 4</label>
+      <input id="subject4" type="number" min="0" max="100" step="0.01" required>
+      <label for="subject5">Subject 5</label>
+      <input id="subject5" type="number" min="0" max="100" step="0.01" required>
+      <button type="submit">Calculate Grade</button>
+    </form>
+
+    <p id="message" aria-live="polite"></p>
+    <section id="results" class="results" hidden></section>
+  </main>
+
+  <script>
+    const form = document.getElementById("gradeForm");
+    const message = document.getElementById("message");
+    const results = document.getElementById("results");
+
+    form.addEventListener("submit", function (event) {
+      event.preventDefault();
+      const marks = [];
+
+      // Get the five marks and check that each one is valid.
+      for (let number = 1; number <= 5; number++) {
+        const mark = Number(document.getElementById("subject" + number).value);
+
+        if (!Number.isFinite(mark) || mark < 0 || mark > 100) {
+          message.textContent = "Please enter a number from 0 to 100 for every subject.";
+          message.className = "error";
+          results.hidden = true;
+          return;
+        }
+        marks.push(mark);
+      }
+
+      const total = marks.reduce(function (sum, mark) {
+        return sum + mark;
+      }, 0);
+      const average = total / 5;
+      const percentage = (total / 500) * 100;
+
+      // A student passes when every subject mark is at least 40.
+      const passed = marks.every(function (mark) {
+        return mark >= 40;
+      });
+
+      const status = passed ? "Pass" : "Fail";
+      message.textContent = "Result: " + status;
+      message.className = passed ? "pass" : "fail";
+      results.innerHTML =
+        "<p><strong>Total:</strong> " + total.toFixed(2) + " / 500</p>" +
+        "<p><strong>Average:</strong> " + average.toFixed(2) + "</p>" +
+        "<p><strong>Percentage:</strong> " + percentage.toFixed(2) + "%</p>";
+      results.hidden = false;
+    });
+  </script>
+</body>
+</html>
